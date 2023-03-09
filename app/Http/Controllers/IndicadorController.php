@@ -186,7 +186,7 @@ class IndicadorController extends Controller
     }
     
     public function indicadores(){
-            
+        
         $codigos = Indicador::select('codigoIndicador')
         ->groupByRaw('codigoIndicador')
         ->get();
@@ -200,14 +200,18 @@ class IndicadorController extends Controller
             ->limit(2)
             ->get();
 
-            $calculo = $a[0]->valorIndicador - $a[1]->valorIndicador;
+            if($a->count() >= 2){
 
-            // $a = Indicador::Where('codigoIndicador', $codigo->codigoIndicador)
-            // ->orderBy('fechaIndicador', 'desc')
-            // ->first();
+                $calculo = $a[0]->valorIndicador - $a[1]->valorIndicador;
 
-            $a[0]->calculo = $calculo;
-            $a[0]->fechaIndicador = Carbon::parse($a[0]->fechaIndicador)->format('d-m-Y');
+                // $a = Indicador::Where('codigoIndicador', $codigo->codigoIndicador)
+                // ->orderBy('fechaIndicador', 'desc')
+                // ->first();
+
+                $a[0]->calculo = $calculo;
+                $a[0]->fechaIndicador = Carbon::parse($a[0]->fechaIndicador)->format('d-m-Y');
+
+            }
 
             if($a[0]->unidadMedidaIndicador == "Pesos"){
                 $a[0]->valorIndicador = '$'.number_format(($a[0]->valorIndicador), 0, ',', '.');
@@ -220,9 +224,14 @@ class IndicadorController extends Controller
             if($a[0]->unidadMedidaIndicador == "Porcentaje"){
                 $a[0]->valorIndicador = $a[0]->valorIndicador.'%';
             }
+
             
             $collection->push($a[0]);
+
         }
+
+        //dd($collection);
+
 
         return $collection;
 
